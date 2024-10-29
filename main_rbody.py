@@ -5,22 +5,38 @@ from typing import Optional, Annotated
 app = FastAPI()
 
 #Pydantic Model 클래스는 반드시 BaseModel을 상속받아 생성. 
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    # tax: float | None = None
+    tax: Optional[float] = None
 
-    #description: Optional[str] = None
-
-    #tax: Optional[float] = None
-
-    
 
 #수행 함수의 인자로 Pydantic model이 입력되면 Json 형태의 Request Body 처리
-
-
+@app.post("/items")
+async def create_item(item: Item):
+    print(f"===== item type: {type(item)}")
+    print(f"===== item: {item}")
+    return item
 
 
 # Request Body의 Pydantic model 값을 Access하여 로직 처리
-  
+@app.post("/items_tax")
+async def create_item_tax(item: Item):
+    item_dict = item.model_dump() # Pydantic model을 dict로 변환
+    print(f"===== item_dict: {item_dict}")
+    if item.tax:
+        tax_price = item.price + item.tax
+        item_dict.update({"tax_price": tax_price})
+
+    return item_dict
 
 # Path, Query, Request Body 모두 함께 적용. 
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, item: Item, q: Optional[str] = None):
+    result = {"item_id": item_id, "item": item, "q": q}
+    return result
 
 
 
