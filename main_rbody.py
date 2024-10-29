@@ -36,11 +36,24 @@ async def create_item_tax(item: Item):
 @app.put("/items/{item_id}")
 async def update_item(item_id: int, item: Item, q: Optional[str] = None):
     result = {"item_id": item_id, "item": item, "q": q}
+    if q:
+        result.update({"q": q})
+    print(f"===== result: {result}")
+    return result
+
+# 여러개의 request body parameter 처리. 
+class User(BaseModel):
+    username: str
+    full_name: str | None = None
+
+
+@app.put("/items_mt/{item_id}")
+# json 데이터의 이름값과 수행함수의 인자명이 같아야 함.  
+async def update_item_mt(item_id: int, item: Item, user: User):
+    result = {"item_id": item_id, "item": item, "user": user}
+    print(f"===== result: {result}")
     return result
 
 
-
-# 여러개의 request body parameter 처리. 
-# json 데이터의 이름값과 수행함수의 인자명이 같아야 함.  
 
 
